@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+class App extends React.Component {
+  state = {
+    name: "",
+  };
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  changeName = (e) => {
+    this.setState({
+      name: e.target.value,
+    });
+  };
+
+  criaComboBox = () => {
+    const options = ["Fulano", "Cicrano", "Maria"];
+    const comboBoxOptions = options.map((options) => (
+      <option>{options}</option>
+    ));
+
+    return <select>{comboBoxOptions}</select>;
+  };
+
+  componentDidMount() {
+    console.log("executou o componentDidMount");
+  }
+
+  render() {
+    console.log("Executou o render");
+    return (
+      <React.Fragment>
+        <input
+          type="text"
+          value={this.state.name}
+          onChange={this.changeName}
+        ></input>
+
+        <h1>Hello {this.state.name}</h1>
+        <h2>Sua idade é {this.props.idade} anos</h2>
+
+        {this.criaComboBox()}
+      </React.Fragment>
+    );
+  }
 }
 
 export default App;
