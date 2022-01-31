@@ -1,6 +1,8 @@
 import React from "react";
 //ProductService armazena os valores do form na localstorage do navegador
 import ProductService from "../../app/productService";
+import { withRouter } from "react-router-dom";
+import Card from "../../components/card";
 
 const initialState = {
   nome: "",
@@ -10,9 +12,10 @@ const initialState = {
   fornecedor: "",
   success: false,
   errors: [],
+  atualizando: false,
 };
 
-export default class CadastroProduto extends React.Component {
+export class CadastroProduto extends React.Component {
   state = initialState;
 
   constructor() {
@@ -27,6 +30,7 @@ export default class CadastroProduto extends React.Component {
   };
 
   onSubmit = (event) => {
+    event.preventDefault();
     const produto = {
       nome: this.state.nome,
       sku: this.state.sku,
@@ -48,11 +52,30 @@ export default class CadastroProduto extends React.Component {
     this.setState(initialState);
   };
 
+  componentDidMount() {
+    const sku = this.props.match.params.sku;
+
+    if (sku) {
+      const resultado = this.service
+        .obterProdutos()
+        .filter((produto) => produto.sku === sku);
+      if (resultado.length === 1) {
+        const produtoEncontrado = resultado[0];
+        this.setState({ ...produtoEncontrado, atualizando: true });
+      }
+    }
+  }
+
   render() {
     return (
-      <div className="card">
-        <div className="card-header">Cadastro de produto</div>
-        <div className="card-body">
+      <Card
+        header={
+          this.state.atualizando
+            ? "Atualização de Produto"
+            : "Cadastro de Produto"
+        }
+      >
+        <form id="frmProduto" onSubmit={this.onSubmit}>
           {this.state.success && (
             <div class="alert alert-dismissible alert-success">
               <button
@@ -98,6 +121,7 @@ export default class CadastroProduto extends React.Component {
                 <input
                   type="text"
                   name="sku"
+                  disabled={this.state.atualizando}
                   onChange={this.onChange}
                   value={this.state.sku}
                   className="form-control"
@@ -147,8 +171,8 @@ export default class CadastroProduto extends React.Component {
 
             <div className="row">
               <div className="col-md-1">
-                <button onClick={this.onSubmit} className="btn btn-success">
-                  Salvar
+                <button type="submit" className="btn btn-success">
+                  {this.state.atualizando ? "Atualizar" : "Salvar"}
                 </button>
               </div>
               <div className="col-md-1">
@@ -158,8 +182,10 @@ export default class CadastroProduto extends React.Component {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </form>
+      </Card>
     );
   }
 }
+
+export default withRouter(CadastroProduto);
